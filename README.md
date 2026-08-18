@@ -15,6 +15,25 @@ Open:
 - Scorekeeper login: http://127.0.0.1:8000/scorekeeper/login/
 - Full admin: http://127.0.0.1:8000/admin/
 
+## Run With Docker
+
+```bash
+docker compose up --build -d
+```
+
+Open http://127.0.0.1:8000/.
+
+For a real server, set these environment variables before starting:
+
+```bash
+export DJANGO_SECRET_KEY="replace-with-a-long-random-secret"
+export DJANGO_ALLOWED_HOSTS="your-domain.com,www.your-domain.com"
+export DJANGO_CSRF_TRUSTED_ORIGINS="https://your-domain.com,https://www.your-domain.com"
+docker compose up --build -d
+```
+
+The Compose setup stores SQLite data in the `olympics_data` Docker volume.
+
 ## Seed Data
 
 The current SQLite database is already seeded from:

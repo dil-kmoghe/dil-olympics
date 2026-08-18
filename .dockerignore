@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+*.pyc
+.DS_Store
+db.sqlite3
+staticfiles
+Dockerfile
+docker-compose.yml

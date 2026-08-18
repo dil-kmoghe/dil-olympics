@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-dev-office-olympics-change-me}"
+      DJANGO_DEBUG: "${DJANGO_DEBUG:-False}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:-*}"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "${DJANGO_CSRF_TRUSTED_ORIGINS:-}"
+      DJANGO_DB_PATH: "/data/db.sqlite3"
+    volumes:
+      - olympics_data:/data
+
+volumes:
+  olympics_data:
