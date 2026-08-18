@@ -1,0 +1,25 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}{{ player.name }}{% endblock %}
+
+{% block content %}
+<section class="detail-head">
+  <a class="back" href="{% url 'scoring:home' %}">Back</a>
+  <h1>{{ player.name }}</h1>
+  <div class="meta">
+    <span>{{ player.team.name|default:"No team assigned" }}</span>
+    {% if player.shirt_size %}<span>Size {{ player.shirt_size }}</span>{% endif %}
+    {% if player.shirt_colour %}<span>{{ player.shirt_colour }}</span>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <h2>Personal Scores</h2>
+  {% include "scoring/score_table.html" with scores=personal_scores %}
+</section>
+
+<section class="section">
+  <h2>Team Event Scores</h2>
+  {% include "scoring/score_table.html" with scores=team_scores %}
+</section>
+{% endblock %}

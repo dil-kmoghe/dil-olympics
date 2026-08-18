@@ -1,0 +1,174 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}Office Olympics Scoreboard{% endblock %}
+
+{% block content %}
+<section class="hero-band">
+  <div>
+    <p class="eyebrow">Live scoring</p>
+    <h1>Office Olympics Scoreboard</h1>
+  </div>
+  <form class="search" method="get">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search your name or team">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+{% if query %}
+  <section class="section">
+    <h2>Search Results</h2>
+    <div class="grid two">
+      <div>
+        <h3>Players</h3>
+        <div class="list">
+          {% for player in players %}
+            <a class="row-link" href="{% url 'scoring:player_detail' player.pk %}">
+              <span>{{ player.name }}</span>
+              <small>{{ player.team.name|default:"No team" }}{% if player.shirt_size %} · {{ player.shirt_size }}{% endif %}{% if player.shirt_colour %} · {{ player.shirt_colour }}{% endif %}</small>
+            </a>
+          {% empty %}
+            <p class="muted">No players found.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div>
+        <h3>Teams</h3>
+        <div class="list">
+          {% for team in teams %}
+            <a class="row-link" href="{% url 'scoring:team_detail' team.pk %}">
+              <span>{{ team.name }}</span>
+              <small>{{ team.players.count }} players</small>
+            </a>
+          {% empty %}
+            <p class="muted">No teams found.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<section class="section">
+  <div class="section-head">
+    <h2>Team Standings</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Place</th>
+          <th>Team</th>
+          <th>Games Played</th>
+          <th>Total Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in team_standings %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{% url 'scoring:team_detail' row.team.pk %}">{{ row.team.name }}</a></td>
+            <td>{{ row.games_played }}</td>
+            <td>{{ row.total_points }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">Scores will appear here.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Game Points Tables</h2>
+  </div>
+  <div class="points-list">
+    {% for table in game_points_tables %}
+      <details class="points-panel" {% if table.rows %}open{% endif %}>
+        <summary>
+          <span>{{ table.game.name }}</span>
+          <small>{{ table.game.get_category_display }}</small>
+        </summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Score</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in table.rows %}
+                <tr>
+                  <td>{{ row.rank|default:"-" }}</td>
+                  <td>
+                    {% if row.team %}
+                      <a href="{% url 'scoring:team_detail' row.team.pk %}">{{ row.team.name }}</a>
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>{{ row.score|floatformat:2 }}</td>
+                  <td>{{ row.points }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4">No scores recorded yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Games</h2>
+  </div>
+  <div class="category-grid">
+    {% for key, group in category_groups.items %}
+      <div class="panel">
+        <h3>{{ group.label }}</h3>
+        <div class="list compact">
+          {% for game in group.games %}
+            <div class="plain-row">{{ game.name }}</div>
+          {% empty %}
+            <p class="muted">No games yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <h2>Recent Scores</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Game</th>
+          <th>Participant</th>
+          <th>Score</th>
+          <th>Rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in recent_scores %}
+          <tr>
+            <td>{{ entry.game.name }}</td>
+            <td>{{ entry.participant_label }}</td>
+            <td>{{ entry.score|floatformat:2 }}</td>
+            <td>{{ entry.rank|default:"-" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">No scores recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

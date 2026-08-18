@@ -1,0 +1,26 @@
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Game</th>
+        <th>Participant</th>
+        <th>Score</th>
+        <th>Rank</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in scores %}
+        <tr>
+          <td>{{ entry.game.name }}</td>
+          <td>{{ entry.participant_label }}</td>
+          <td>{{ entry.score|floatformat:2 }}</td>
+          <td>{{ entry.rank|default:"-" }}</td>
+          <td>{{ entry.notes }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">No scores recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

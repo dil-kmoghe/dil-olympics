@@ -1,0 +1,32 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Office Olympics{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'scoring/styles.css' %}?v=clean-white-maroon-1">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="{% url 'scoring:home' %}">Office Olympics</a>
+      <nav class="nav">
+        <a href="{% url 'scoring:home' %}">Public View</a>
+        <a href="{% url 'scoring:scorekeeper_dashboard' %}">Scorekeeper</a>
+        <a href="/admin/">Admin</a>
+      </nav>
+    </header>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <main class="shell">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

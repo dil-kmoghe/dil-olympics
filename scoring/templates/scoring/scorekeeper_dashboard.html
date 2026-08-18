@@ -1,0 +1,26 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}Scorekeeper{% endblock %}
+
+{% block content %}
+<section class="detail-head">
+  <div>
+    <p class="eyebrow">Signed in as {{ account.username }}</p>
+    <h1>Assigned Games</h1>
+  </div>
+  <a class="button secondary" href="{% url 'scoring:scorekeeper_logout' %}">Log Out</a>
+</section>
+
+<section class="section">
+  <div class="game-grid">
+    {% for game in games %}
+      <a class="game-tile" href="{% url 'scoring:scorekeeper_game' game.slug %}">
+        <span>{{ game.get_category_display }}</span>
+        <strong>{{ game.name }}</strong>
+      </a>
+    {% empty %}
+      <p class="muted">No games assigned.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

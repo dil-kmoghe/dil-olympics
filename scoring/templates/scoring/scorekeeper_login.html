@@ -1,0 +1,14 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}Scorekeeper Login{% endblock %}
+
+{% block content %}
+<section class="auth-panel">
+  <h1>Scorekeeper Login</h1>
+  <form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Log In</button>
+  </form>
+</section>
+{% endblock %}

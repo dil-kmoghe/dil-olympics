@@ -1,0 +1,58 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}{{ team.name }}{% endblock %}
+
+{% block content %}
+<section class="detail-head">
+  <a class="back" href="{% url 'scoring:home' %}">Back</a>
+  <h1>{{ team.name }}</h1>
+  <div class="meta">
+    {% if team.colour %}<span>{{ team.colour }}</span>{% endif %}
+    <span>{{ roster|length }} players</span>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Roster</h2>
+  <div class="roster">
+    {% for player in roster %}
+      <a href="{% url 'scoring:player_detail' player.pk %}">{{ player.name }}</a>
+    {% empty %}
+      <p class="muted">No players assigned.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Scores</h2>
+    <strong class="points-total">{{ total_points }} points</strong>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Game</th>
+          <th>Score</th>
+          <th>Rank</th>
+          <th>Points</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in score_rows %}
+          <tr>
+            <td>{{ row.entry.game.name }}</td>
+            <td>{{ row.entry.score|floatformat:2 }}</td>
+            <td>{{ row.entry.rank|default:"-" }}</td>
+            <td>{{ row.points }}</td>
+            <td>{{ row.entry.notes }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">No scores recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

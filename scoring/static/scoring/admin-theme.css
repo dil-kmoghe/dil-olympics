@@ -1,0 +1,99 @@
+:root {
+  --primary: #8a2432;
+  --secondary: #5b101b;
+  --accent: #f9fafb;
+  --primary-fg: #ffffff;
+  --body-fg: #2a070b;
+  --body-bg: #ffffff;
+  --body-quiet-color: #667085;
+  --body-medium-color: #5d3239;
+  --border-color: #e5e7eb;
+  --breadcrumbs-bg: #ffffff;
+  --breadcrumbs-fg: #5b101b;
+  --link-fg: #8a2432;
+  --link-hover-color: #a8222f;
+  --link-selected-fg: #a8222f;
+  --hairline-color: #e5e7eb;
+  --darkened-bg: #f9fafb;
+  --selected-bg: #f9fafb;
+  --selected-row: #f9fafb;
+}
+
+#header {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--border-color);
+  color: #ffffff;
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+  color: var(--secondary);
+}
+
+div.breadcrumbs {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--secondary);
+}
+
+div.breadcrumbs a {
+  color: var(--primary);
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: #f9fafb !important;
+  color: var(--secondary);
+}
+
+input[type="submit"],
+button,
+.submit-row input,
+a.button {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+input[type="submit"]:hover,
+button:hover,
+.submit-row input:hover,
+a.button:hover {
+  background: var(--secondary) !important;
+}
+
+.button.default,
+input[type="submit"].default,
+.submit-row input.default {
+  background: var(--secondary) !important;
+}
+
+.button.default:hover,
+input[type="submit"].default:hover,
+.submit-row input.default:hover {
+  background: #3c0710 !important;
+}
+
+#user-tools a:focus,
+#user-tools a:hover,
+a:focus,
+a:hover {
+  color: #a8222f;
+}
+
+.selector-chosen h2 {
+  background: var(--secondary) !important;
+}
+
+#changelist-filter h2,
+#toolbar,
+.submit-row {
+  background: #ffffff !important;
+}
+
+table thead th {
+  background: #f9fafb !important;
+  color: var(--secondary) !important;
+}

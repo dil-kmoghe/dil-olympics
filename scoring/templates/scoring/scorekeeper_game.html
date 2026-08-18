@@ -1,0 +1,39 @@
+{% extends "scoring/base.html" %}
+
+{% block title %}{{ game.name }} Scoring{% endblock %}
+
+{% block content %}
+<section class="detail-head">
+  <a class="back" href="{% url 'scoring:scorekeeper_dashboard' %}">Back</a>
+  <p class="eyebrow">{{ game.get_category_display }}</p>
+  <h1>{{ game.name }}</h1>
+</section>
+
+<section class="section">
+  <div class="grid two">
+    <div class="panel">
+      <h2>Add Score</h2>
+      <form method="post" class="form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="score">
+        {{ score_form.as_p }}
+        <button type="submit">Save Score</button>
+      </form>
+    </div>
+    <div class="panel">
+      <h2>Add Player</h2>
+      <form method="post" class="form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_player">
+        {{ player_form.as_p }}
+        <button type="submit">Add Player</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Recorded Scores</h2>
+  {% include "scoring/score_table.html" with scores=scores %}
+</section>
+{% endblock %}
