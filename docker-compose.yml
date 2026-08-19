@@ -8,10 +8,17 @@ services:
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:-dev-office-olympics-change-me}"
       DJANGO_DEBUG: "${DJANGO_DEBUG:-False}"
       DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:-*}"
-      DJANGO_CSRF_TRUSTED_ORIGINS: "${DJANGO_CSRF_TRUSTED_ORIGINS:-}"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "${DJANGO_CSRF_TRUSTED_ORIGINS:-https://*.trycloudflare.com,https://*.loca.lt,https://*.serveo.net}"
       DJANGO_DB_PATH: "/data/db.sqlite3"
+      SEED_EXCEL_PATH: "/seed/office-olympics.xlsx"
+      SEED_CREATE_ADMIN: "${SEED_CREATE_ADMIN:-true}"
+      SEED_CREATE_SCOREKEEPERS: "${SEED_CREATE_SCOREKEEPERS:-true}"
+      GUNICORN_WORKERS: "${GUNICORN_WORKERS:-2}"
+      GUNICORN_THREADS: "${GUNICORN_THREADS:-4}"
+      GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-120}"
     volumes:
       - olympics_data:/data
+      - ./seed/office-olympics.xlsx:/seed/office-olympics.xlsx:ro
 
 volumes:
   olympics_data:

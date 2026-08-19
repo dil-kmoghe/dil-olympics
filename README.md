@@ -15,6 +15,24 @@ Open:
 - Scorekeeper login: http://127.0.0.1:8000/scorekeeper/login/
 - Full admin: http://127.0.0.1:8000/admin/
 
+## Run With Docker For LAN Access
+
+```bash
+docker-compose up -d --build
+```
+
+The app listens on `0.0.0.0:8000`, so people on the same network can open:
+
+```text
+http://YOUR_MACHINE_IP:8000/
+```
+
+Stop it with:
+
+```bash
+docker-compose down
+```
+
 ## Run With Docker
 
 ```bash

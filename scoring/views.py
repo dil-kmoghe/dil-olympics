@@ -142,6 +142,18 @@ def scorekeeper_game(request, slug):
                 return redirect("scoring:scorekeeper_game", slug=game.slug)
 
     scores = game.scores.select_related("team", "player1", "player2").order_by("rank", "-score", "-updated_at")
+    teams_for_roster = Team.objects.prefetch_related("players").order_by("name")
+    team_rosters = {
+        str(team.pk): [
+            {
+                "name": player.name,
+                "shirt_size": player.shirt_size,
+                "shirt_colour": player.shirt_colour,
+            }
+            for player in team.players.order_by("name")
+        ]
+        for team in teams_for_roster
+    }
     return render(
         request,
         "scoring/scorekeeper_game.html",
@@ -151,5 +163,6 @@ def scorekeeper_game(request, slug):
             "score_form": score_form,
             "player_form": player_form,
             "scores": scores,
+            "team_rosters": team_rosters,
         },
     )

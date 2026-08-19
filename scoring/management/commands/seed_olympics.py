@@ -8,6 +8,7 @@ from django.utils.text import slugify
 from openpyxl import load_workbook
 
 from scoring.models import EventCategory, Game, Player, ScorekeeperAccount, Team
+from scoring.team_utils import player_key, team_key
 
 
 TEAM_EVENTS = [
@@ -114,15 +115,32 @@ class Command(BaseCommand):
             data = shirt_data[player_name]
             shirt_size = data["size"].most_common(1)[0][0] if data["size"] else ""
             shirt_colour = data["colour"].most_common(1)[0][0] if data["colour"] else ""
-            team, _ = Team.objects.get_or_create(name=team_name, defaults={"colour": shirt_colour})
+            team = next((existing for existing in Team.objects.all() if team_key(existing.name) == team_key(team_name)), None)
+            if team is None:
+                team = Team.objects.create(name=team_name, colour=shirt_colour)
             if shirt_colour and not team.colour:
                 team.colour = shirt_colour
                 team.save(update_fields=["colour"])
-            Player.objects.get_or_create(
-                name=player_name,
-                team=team,
-                defaults={"shirt_size": shirt_size, "shirt_colour": shirt_colour},
+            player = next(
+                (
+                    existing
+                    for existing in Player.objects.filter(team=team)
+                    if player_key(existing.name) == player_key(player_name)
+                ),
+                None,
             )
+            if player is None:
+                Player.objects.create(name=player_name, team=team, shirt_size=shirt_size, shirt_colour=shirt_colour)
+            else:
+                updates = []
+                if shirt_size and not player.shirt_size:
+                    player.shirt_size = shirt_size
+                    updates.append("shirt_size")
+                if shirt_colour and not player.shirt_colour:
+                    player.shirt_colour = shirt_colour
+                    updates.append("shirt_colour")
+                if updates:
+                    player.save(update_fields=updates)
 
     def create_admin(self):
         User = get_user_model()

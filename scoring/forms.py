@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import Game, Player, ScoreEntry, ScorekeeperAccount, Team
+from .team_utils import team_key
 
 
 class ScorekeeperLoginForm(forms.Form):
@@ -19,7 +20,8 @@ class PlayerForm(forms.ModelForm):
         player = super().save(commit=False)
         new_team_name = self.cleaned_data.get("new_team_name", "").strip()
         if new_team_name:
-            player.team, _ = Team.objects.get_or_create(name=new_team_name)
+            existing_team = next((team for team in Team.objects.all() if team_key(team.name) == team_key(new_team_name)), None)
+            player.team = existing_team or Team.objects.create(name=new_team_name)
         if commit:
             player.save()
         return player

@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -97,3 +98,24 @@ class GameAdminTests(TestCase):
         account = ScorekeeperAccount.objects.get(username="desk-sprint")
         self.assertTrue(account.check_password("gamepass123"))
         self.assertIn(game, account.games.all())
+
+
+class TeamMergeTests(TestCase):
+    def test_merge_duplicate_teams_moves_players_and_scores(self):
+        game = Game.objects.create(name="Desk Relay", category=EventCategory.TEAM)
+        canonical = Team.objects.create(name="BE Awesome")
+        duplicate = Team.objects.create(name="BE-AWESOME1")
+        player = canonical.players.create(name="Maya Shinde")
+        duplicate_player = duplicate.players.create(name="maya shinde")
+        score = ScoreEntry.objects.create(game=game, team=duplicate, score=10)
+        player_score = ScoreEntry.objects.create(game=game, team=duplicate, player1=duplicate_player, score=8)
+
+        call_command("merge_duplicate_teams")
+
+        self.assertTrue(Team.objects.filter(name="BE Awesome").exists())
+        self.assertFalse(Team.objects.filter(name="BE-AWESOME1").exists())
+        score.refresh_from_db()
+        self.assertEqual(score.team, canonical)
+        player_score.refresh_from_db()
+        self.assertEqual(player_score.player1, player)
+        self.assertEqual(canonical.players.count(), 1)

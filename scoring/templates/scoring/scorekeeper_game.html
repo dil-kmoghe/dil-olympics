@@ -17,6 +17,16 @@
         {% csrf_token %}
         <input type="hidden" name="action" value="score">
         {{ score_form.as_p }}
+        <div class="team-picker" id="team-picker">
+          <label for="team-search">Search team</label>
+          <input type="search" id="team-search" placeholder="Type team name">
+          <div class="team-picker-status" id="team-picker-status">Select a team</div>
+          <div class="team-picker-list" id="team-picker-list"></div>
+        </div>
+        <div class="team-roster-preview" id="team-roster-preview">
+          <strong>Team players</strong>
+          <p class="muted">Select a team to see its players.</p>
+        </div>
         <button type="submit">Save Score</button>
       </form>
     </div>
@@ -36,4 +46,92 @@
   <h2>Recorded Scores</h2>
   {% include "scoring/score_table.html" with scores=scores %}
 </section>
+
+{{ team_rosters|json_script:"team-rosters-data" }}
+<script>
+  (function () {
+    const teamSelect = document.getElementById("id_team");
+    const teamField = teamSelect ? teamSelect.closest("p") : null;
+    const teamSearch = document.getElementById("team-search");
+    const teamList = document.getElementById("team-picker-list");
+    const teamStatus = document.getElementById("team-picker-status");
+    const rosterBox = document.getElementById("team-roster-preview");
+    const rosters = JSON.parse(document.getElementById("team-rosters-data").textContent);
+    const teams = teamSelect ? Array.from(teamSelect.options).filter(function (option) {
+      return option.value;
+    }).map(function (option) {
+      return { id: option.value, name: option.textContent.trim() };
+    }) : [];
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, function (char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#039;"
+        }[char];
+      });
+    }
+
+    function renderRoster() {
+      const players = rosters[teamSelect.value] || [];
+      if (!players.length) {
+        rosterBox.innerHTML = "<strong>Team players</strong><p class=\"muted\">No players found for this team.</p>";
+        return;
+      }
+
+      const items = players.map(function (player) {
+        const meta = [player.shirt_size, player.shirt_colour].filter(Boolean).join(" / ");
+        return "<li><span>" + player.name + "</span>" + (meta ? "<small>" + meta + "</small>" : "") + "</li>";
+      }).join("");
+      rosterBox.innerHTML = "<strong>Team players</strong><ul>" + items + "</ul>";
+    }
+
+    function selectTeam(teamId) {
+      teamSelect.value = teamId;
+      const selected = teams.find(function (team) {
+        return team.id === teamId;
+      });
+      teamStatus.textContent = selected ? "Selected: " + selected.name : "Select a team";
+      teamSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function renderTeamList() {
+      const query = teamSearch.value.trim().toLowerCase();
+      const matches = teams.filter(function (team) {
+        return !query || team.name.toLowerCase().includes(query);
+      }).slice(0, 20);
+
+      if (!matches.length) {
+        teamList.innerHTML = "<div class=\"team-picker-empty\">No teams found</div>";
+        return;
+      }
+
+      teamList.innerHTML = matches.map(function (team) {
+        const selected = team.id === teamSelect.value ? " selected" : "";
+        return "<button type=\"button\" class=\"team-picker-option" + selected + "\" data-team-id=\"" + team.id + "\">" + escapeHtml(team.name) + "</button>";
+      }).join("");
+    }
+
+    if (teamSelect && rosterBox && teamSearch && teamList) {
+      if (teamField) {
+        teamField.classList.add("native-team-field");
+      }
+      teamSelect.addEventListener("change", renderRoster);
+      teamSearch.addEventListener("input", renderTeamList);
+      teamList.addEventListener("click", function (event) {
+        const button = event.target.closest("[data-team-id]");
+        if (!button) {
+          return;
+        }
+        selectTeam(button.dataset.teamId);
+        renderTeamList();
+      });
+      renderRoster();
+      renderTeamList();
+    }
+  })();
+</script>
 {% endblock %}
